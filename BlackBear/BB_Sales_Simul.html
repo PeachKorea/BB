@@ -68,7 +68,7 @@
           <span class="unit">원</span>
         </div>
         <div class="slider-row" style="margin-top:6px">
-          <input type="range" id="donutRevSlider" min="3000000" max="30000000" value="12658682" step="500000">
+          <input type="range" id="donutRevSlider" min="12500000" max="30000000" value="12658682" step="500000">
           <span class="slider-val" id="donutRevOut">-</span>
         </div>
       </div>
@@ -79,7 +79,7 @@
     </div>
     <div class="slider-row">
       <label>도넛 매입률</label>
-      <input type="range" id="purchaseRate" min="25" max="55" value="45" step="1">
+      <input type="range" id="purchaseRate" min="35" max="45" value="45" step="1">
       <span class="slider-val" id="purchaseRateOut">45%</span>
     </div>
   </div>
@@ -191,7 +191,7 @@ function calc(){
   else{chart=new Chart(document.getElementById('simChart'),{type:'bar',data:{labels:['도넛','음료'],datasets:[{label:'매출',data:[Math.round(dr),Math.round(rr)],backgroundColor:'#378ADD',borderWidth:0},{label:'비용',data:[Math.round(dC),Math.round(rC)],backgroundColor:'#D85A30',borderWidth:0},{label:'이익',data:[Math.round(dr-dC),Math.round(rr-rC)],backgroundColor:'#1D9E75',borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>{if(Math.abs(v)>=10000000)return(v/10000000).toFixed(0)+'천만';if(Math.abs(v)>=10000)return(v/10000).toFixed(0)+'만';return v;}}}}}});}
 }
 document.getElementById('donutRevSlider').addEventListener('input',function(){document.getElementById('donutRev').value=this.value;calc();});
-document.getElementById('donutRev').addEventListener('input',function(){const v=parseFloat(this.value)||0;document.getElementById('donutRevSlider').value=Math.min(Math.max(v,3000000),30000000);calc();});
+document.getElementById('donutRev').addEventListener('input',function(){const v=parseFloat(this.value)||0;document.getElementById('donutRevSlider').value=Math.min(Math.max(v,12500000),30000000);calc();});
 
 document.getElementById('purchaseRate').addEventListener('input',calc);
 calc();
