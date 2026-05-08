@@ -76,7 +76,7 @@
     <div class="slider-row" style="margin-bottom:10px">
       <label>도넛 매출</label>
       <input type="range" id="donutRevSlider" min="12500000" max="30000000" value="12658682" step="500000">
-      <span class="slider-val" style="visibility:hidden">00%</span>
+      <span class="slider-val" id="donutRevOut">-</span>
     </div>
     <div class="slider-row">
       <label>도넛 매입률</label>
@@ -139,6 +139,7 @@ function calc(){
   document.getElementById('purchaseRateOut').textContent=Math.round(pr*100)+'%';
   const storeX=((dr-6000000)/6500000).toFixed(2);
   const totalMult=(dr/BASE_DONUT).toFixed(1);
+  document.getElementById('donutRevOut').textContent=fmtSlider(dr);
   document.getElementById('donutRevLabel').innerHTML='도넛 매출 <span style="font-size:11px;font-weight:500;color:#888">(전체 매출 × <span style="color:#5b5bd6;font-weight:700">'+totalMult+'</span> & 기존 매장 × <span style="color:#E24B4A;font-weight:700">'+storeX+'</span>)</span>';
   document.getElementById('drinkRevDisplay').textContent=fmtW(rr);
   const total=dr+rr, dm=dr/BASE_DONUT, drm=rr/BASE_DRINK;
