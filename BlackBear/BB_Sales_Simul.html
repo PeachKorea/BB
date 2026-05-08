@@ -62,20 +62,21 @@
     <p class="card-title">매출 입력</p>
     <div class="input-grid">
       <div class="input-group">
-        <label>도넛 매출</label>
+        <label id="donutRevLabel">도넛 매출</label>
         <div class="input-wrapper">
           <input type="number" id="donutRev" value="12658682" step="500000" min="0">
           <span class="unit">원</span>
-        </div>
-        <div class="slider-row" style="margin-top:6px">
-          <input type="range" id="donutRevSlider" min="12500000" max="30000000" value="12658682" step="500000">
-          <span class="slider-val" id="donutRevOut">-</span>
         </div>
       </div>
       <div class="input-group">
         <label>음료 매출 <span style="font-size:11px;color:#aaa;font-weight:400">(도넛 매출의 20% 자동 산정)</span></label>
         <div style="padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:9px;background:#fafafa;font-size:14px;font-weight:600;color:#888" id="drinkRevDisplay">-</div>
       </div>
+    </div>
+    <div class="slider-row" style="margin-bottom:10px">
+      <label>도넛 매출</label>
+      <input type="range" id="donutRevSlider" min="12500000" max="30000000" value="12658682" step="500000">
+      <span class="slider-val" style="visibility:hidden">00%</span>
     </div>
     <div class="slider-row">
       <label>도넛 매입률</label>
@@ -137,7 +138,8 @@ function calc(){
   const pr=document.getElementById('purchaseRate').value/100;
   document.getElementById('purchaseRateOut').textContent=Math.round(pr*100)+'%';
   const storeX=((dr-6000000)/6500000).toFixed(2);
-  document.getElementById('donutRevOut').innerHTML=fmtSlider(dr)+' <span style="font-size:11px;font-weight:500;color:#aaa">× '+(dr/BASE_DONUT).toFixed(1)+'</span> <span style="font-size:11px;font-weight:700;color:#E24B4A">(기존 매장 × '+storeX+')</span>';
+  const totalMult=(dr/BASE_DONUT).toFixed(1);
+  document.getElementById('donutRevLabel').innerHTML='도넛 매출 <span style="font-size:11px;font-weight:500;color:#888">(전체 매출 × <span style="color:#5b5bd6;font-weight:700">'+totalMult+'</span> & 기존 매장 × <span style="color:#E24B4A;font-weight:700">'+storeX+'</span>)</span>';
   document.getElementById('drinkRevDisplay').textContent=fmtW(rr);
   const total=dr+rr, dm=dr/BASE_DONUT, drm=rr/BASE_DRINK;
   const sc=dm*SD+drm*SDR;
