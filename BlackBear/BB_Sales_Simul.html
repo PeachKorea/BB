@@ -129,20 +129,23 @@ function fmtW(n){const v=Math.round(n);if(Math.abs(v)>=100000000)return(v/100000
 function fmtR(n){return Math.round(n).toLocaleString();}
 function pct(n){return(n*100).toFixed(1)+'%';}
 function fmtSlider(n){if(n>=10000000)return(n/10000000).toFixed(1).replace(/\.0$/,'')+'천만';if(n>=10000)return Math.round(n/10000)+'만원';return n.toLocaleString()+'원';}
+function calcLabor(dr){if(dr>=27000000)return F.labor*1.3;if(dr>=24000000)return F.labor*1.2;if(dr>=21000000)return F.labor*1.1;return F.labor;}
 let chart;
 function calc(){
   const dr=parseFloat(document.getElementById('donutRev').value)||0;
   const rr=dr*0.2;
   const pr=document.getElementById('purchaseRate').value/100;
   document.getElementById('purchaseRateOut').textContent=Math.round(pr*100)+'%';
-  document.getElementById('donutRevOut').innerHTML=fmtSlider(dr)+' <span style="font-size:11px;font-weight:500;color:#aaa">× '+(dr/BASE_DONUT).toFixed(1)+'</span>';
+  const storeX=((dr-6000000)/6500000).toFixed(2);
+  document.getElementById('donutRevOut').innerHTML=fmtSlider(dr)+' <span style="font-size:11px;font-weight:500;color:#aaa">× '+(dr/BASE_DONUT).toFixed(1)+'</span> <span style="font-size:11px;font-weight:700;color:#E24B4A">(기존 매장 × '+storeX+')</span>';
   document.getElementById('drinkRevDisplay').textContent=fmtW(rr);
   const total=dr+rr, dm=dr/BASE_DONUT, drm=rr/BASE_DRINK;
   const sc=dm*SD+drm*SDR;
   const purchase=dr*pr;
   const cardRate=total<25000000?0.004:0.01;
+  const labor=calcLabor(dr);
   const rows=[
-    {n:'인건비',f:true,d:F.labor*SD,dr:F.labor*SDR,t:F.labor},
+    {n:'인건비',f:false,d:labor*SD,dr:labor*SDR,t:labor},
     {n:'월세',f:true,d:F.rent*SD,dr:F.rent*SDR,t:F.rent},
     {n:'포스기',f:true,d:F.pos*SD,dr:F.pos*SDR,t:F.pos},
     {n:'인터넷/전화',f:true,d:F.net*SD,dr:F.net*SDR,t:F.net},
