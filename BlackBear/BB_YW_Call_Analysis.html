@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>게임이론으로 본 권리금 협상 최종 분석</title>
+  <meta name="description" content="권리금 협상을 게임이론 관점에서 정리한 반응형 HTML 문서" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a31;
+      --panel-2: #182342;
+      --text: #eef2ff;
+      --muted: #b6c2e1;
+      --line: rgba(255,255,255,0.1);
+      --accent: #7c9cff;
+      --accent-2: #27d3a2;
+      --warn: #ffb84d;
+      --danger: #ff7a7a;
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 20px;
+      --radius-sm: 14px;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,156,255,0.18), transparent 26%),
+        radial-gradient(circle at top right, rgba(39,211,162,0.12), transparent 24%),
+        linear-gradient(180deg, #0a1020 0%, #0c1326 100%);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 72px 0 32px;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 6px);
+      padding: 36px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(124,156,255,0.28), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124,156,255,0.12);
+      color: #d7e1ff;
+      border: 1px solid rgba(124,156,255,0.24);
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, h4, p { margin: 0; }
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+      max-width: 12ch;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 1.7vw, 1.15rem);
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 22px;
+      margin-top: 28px;
+    }
+
+    .mini-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .mini-panel h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #dce6ff;
+    }
+
+    .signal-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .signal {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 12px;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .signal strong {
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    .signal span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .section {
+      padding: 22px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      min-height: 100%;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      margin-bottom: 12px;
+      border: 1px solid transparent;
+    }
+
+    .blue { background: rgba(124,156,255,0.12); border-color: rgba(124,156,255,0.24); color: #dce5ff; }
+    .green { background: rgba(39,211,162,0.12); border-color: rgba(39,211,162,0.24); color: #d5fff2; }
+    .orange { background: rgba(255,184,77,0.12); border-color: rgba(255,184,77,0.24); color: #ffe8bf; }
+    .red { background: rgba(255,122,122,0.12); border-color: rgba(255,122,122,0.24); color: #ffd7d7; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.03);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 16px 18px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: #ffffff;
+      background: rgba(255,255,255,0.04);
+      font-size: 0.95rem;
+    }
+
+    td {
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .deadlock {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .deadlock .side {
+      padding: 20px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .deadlock .vs {
+      font-size: 1.4rem;
+      color: var(--warn);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .rank-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .rank-item {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+
+    .rank-item .rank {
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .rank-item .desc {
+      color: var(--muted);
+    }
+
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .strategy {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .strategy-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stars {
+      letter-spacing: 0.12em;
+      color: var(--warn);
+      white-space: nowrap;
+      font-size: 0.96rem;
+    }
+
+    .strategy p { color: var(--muted); }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      color: #dce6ff;
+      font-size: 0.88rem;
+    }
+
+    .summary-box {
+      margin-top: 18px;
+      background: linear-gradient(135deg, rgba(124,156,255,0.16), rgba(39,211,162,0.12));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .summary-box p {
+      font-size: 1.06rem;
+      color: #eff5ff;
+    }
+
+    .footer {
+      padding: 18px 0 56px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .cards,
+      .strategy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .deadlock {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .deadlock .vs {
+        transform: rotate(90deg);
+        margin: 4px auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        width: min(calc(100% - 20px), var(--max));
+      }
+
+      .hero {
+        padding-top: 40px;
+      }
+
+      .hero-card,
+      .card,
+      .strategy,
+      .summary-box,
+      .mini-panel {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .signal,
+      .rank-item {
+        grid-template-columns: 1fr;
+      }
+
+      th, td {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div class="eyebrow">🎯 게임이론 기반 협상 분석</div>
+        <h1>권리금 협상 최종 분석</h1>
+        <p class="lead">
+          이 협상은 불완전 정보와 비제로섬 게임이 겹쳐 있는 구조입니다. 표면상 쟁점은 권리금과 명도 기간이지만,
+          실제로는 각 플레이어가 숨기고 있는 이익 구조와 감정 비용이 협상력을 좌우합니다.
+        </p>
+
+        <div class="hero-grid">
+          <div class="mini-panel">
+            <h3>게임의 핵심 구조</h3>
+            <div class="signal-list">
+              <div class="signal">
+                <strong>게임 유형</strong>
+                <span>불완전 정보 + 비제로섬 게임</span>
+              </div>
+              <div class="signal">
+                <strong>핵심 변수</strong>
+                <span>금액(권리금)과 기간(명도) 두 축</span>
+              </div>
+              <div class="signal">
+                <strong>실질 전장</strong>
+                <span>법적 방어력, 시간 압박, 심리적 비용, 공간 활용 가치</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mini-panel">
+            <h3>한 문장 진단</h3>
+            <p>
+              이대권은 법적으로 유리하고 돈도 급하지 않지만, 스트레스라는 감정적 비용이 약점입니다.
+              따라서 경쟁자 양도 카드를 실행 가능하게 만들고, 협상 전선을 계약서 특약 쪽으로 옮기는 것이 가장 강한 수입니다.
+            </p>
+            <div class="tag-row">
+              <span class="tag">법적 우위</span>
+              <span class="tag">감정 비용</span>
+              <span class="tag">치킨 게임</span>
+              <span class="tag">전략적 메신저</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>플레이어별 속내</h2>
+            <p>표면 포지션과 실제 선호 사이의 간극이 이 협상 전체를 움직입니다.</p>
+          </div>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <span class="badge blue">이대권</span>
+            <h3>표면상 퇴거, 실제론 스테이도 유리</h3>
+            <p>
+              “나가는 게 베스트”라고 말하지만, 실제로는 스테이가 금전적으로 유리하다는 점을 잘 알고 있습니다.
+              “2천 + 45일”은 최종안이 아니라 협상용 앵커에 가깝고, 조건만 맞지 않으면 곧바로 스테이로 전환할 수 있는 구조입니다.
+            </p>
+          </article>
+
+          <article class="card">
+            <span class="badge green">모두다</span>
+            <h3>강경하지만, 원하는 그림은 아직 완성되지 않음</h3>
+            <p>
+              공사를 이미 시작했어도 협상 테이블을 유지하는 이유는 블랙베어도넛 공간까지 포함한 전체 활용이 필요하기 때문입니다.
+              즉시 퇴거를 요구하지만, 현재 상태로는 가장 원하는 운영 구상을 완성할 수 없습니다.
+            </p>
+          </article>
+
+          <article class="card">
+            <span class="badge orange">조용우 소장</span>
+            <h3>중립보다 모두다 쪽에 기울어진 에이전트</h3>
+            <p>
+              스테이와 퇴거를 균형 있게 제시하기보다 퇴거 방향을 계속 유도합니다.
+              따라서 조용우에게 전달하는 정보는 모두다로 흘러간다고 보고, 신뢰 대상이 아니라 활용 대상으로 다뤄야 합니다.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>표면 포지션 vs 실제 선호</h2>
+            <p>이대권의 말과 실제 계산 사이 차이를 구조적으로 정리한 표입니다.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>표면 포지션</th>
+                <th>실제 속내</th>
+                <th>해석</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>“나가는 게 베스트”</td>
+                <td>스테이가 금전적으로 더 유리함을 알고 있음</td>
+                <td>퇴거 의사 표시는 협상 우위를 만들기 위한 신호일 가능성이 큼</td>
+              </tr>
+              <tr>
+                <td>“2천 + 45일이 최종”</td>
+                <td>실제 허용 범위는 더 유연함</td>
+                <td>강한 앵커를 먼저 제시해 상대 반응을 보려는 전략</td>
+              </tr>
+              <tr>
+                <td>“모든 카드 오픈”</td>
+                <td>신뢰 형성을 위한 전략적 오픈</td>
+                <td>정보 비대칭을 일부 해소하는 대신 협상 주도권을 얻으려는 시도</td>
+              </tr>
+              <tr>
+                <td>“금전적으로 전혀 우려 없다”</td>
+                <td>가장 진짜에 가까운 발언</td>
+                <td>협상에서 돈보다 감정적 피로가 더 큰 약점임을 시사</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="rank-list">
+          <div class="rank-item">
+            <div class="rank">1순위</div>
+            <div class="desc">좋은 조건(2천 + 넉넉한 기간)으로 깔끔하게 퇴거</div>
+          </div>
+          <div class="rank-item">
+            <div class="rank">2순위</div>
+            <div class="desc">스테이하면서 모두다 입점 효과에 따른 매출 증가 가능성 누리기</div>
+          </div>
+          <div class="rank-item">
+            <div class="rank">3순위</div>
+            <div class="desc">장기 법적 분쟁으로 버티기, 즉 최소 8년까지 가능한 BATNA 활용</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>현재 내시균형</h2>
+            <p>지금은 전형적인 치킨 게임 구조로, 먼저 핸들을 꺾는 쪽이 손해를 보는 상황입니다.</p>
+          </div>
+        </div>
+
+        <div class="deadlock">
+          <div class="side">
+            <span class="badge green">모두다</span>
+            <h3>즉시 나가라</h3>
+            <p>공사와 운영 구상을 완성하려면 현재 공간을 빠르게 확보하고 싶습니다.</p>
+          </div>
+          <div class="vs">VS</div>
+          <div class="side">
+            <span class="badge blue">이대권</span>
+            <h3>조건 안 맞으면 8년 스테이</h3>
+            <p>법적 방어력이 있기 때문에 먼저 물러날 이유가 크지 않습니다.</p>
+          </div>
+        </div>
+
+        <p class="note">
+          양측 모두 교착을 깨고 싶지만, 먼저 양보하면 손해라는 점을 알기 때문에 멈춰 있습니다.
+          따라서 승부는 “나는 절대 핸들을 꺾지 않겠다”는 공약을 누가 더 신뢰성 있게 보여주느냐에 달려 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>레버리지 전략</h2>
+            <p>이대권 입장에서 실질적으로 협상력을 높일 수 있는 수단을 우선순위대로 정리했습니다.</p>
+          </div>
+        </div>
+
+        <div class="strategy-grid">
+          <article class="strategy">
+            <div class="strategy-top">
+              <h3>전략 1. 경쟁자 양도 카드</h3>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p>
+              가장 강력한 카드는 모두다의 경쟁 브랜드가 해당 자리에 들어올 수 있다는 시나리오입니다.
+              단순 발언으로 끝나면 공허한 위협에 그치므로, 실제 경쟁 브랜드에 양도 문의를 넣고 그 신호가 흘러가게 만들어야 합니다.
+            </p>
+          </article>
+
+          <article class="strategy">
+            <div class="strategy-top">
+              <h3>전략 2. 전선 이동</h3>
+              <div class="stars">★★★★☆</div>
+            </div>
+            <p>
+              스테이를 결정했다면 더 이상 퇴거 협상만 붙잡고 있을 이유가 없습니다.
+              이제는 임대료 인상 시점, 관리비 부과 방식 등 계약서 특약을 세밀하게 검토하고 수정 요구하는 방향으로 전장을 바꿔야 합니다.
+            </p>
+          </article>
+
+          <article class="strategy">
+            <div class="strategy-top">
+              <h3>전략 3. 공사 환경 활용</h3>
+              <div class="stars">★★★☆☆</div>
+            </div>
+            <p>
+              공사 중 영업은 소음과 분진에 따른 손실 가능성을 낳습니다.
+              이를 곧바로 법적 위협으로 쓰기보다, “서로 불편하니 재협상하자”는 명분으로 활용하는 편이 현실적입니다.
+            </p>
+          </article>
+
+          <article class="strategy">
+            <div class="strategy-top">
+              <h3>전략 4. 조용우 역이용</h3>
+              <div class="stars">★★★☆☆</div>
+            </div>
+            <p>
+              조용우를 설득 대상으로 보기보다 모두다에 메시지를 전달하는 메신저로 활용해야 합니다.
+              스테이 결심이나 심리적 피로 같은 약점은 차단하고, 경쟁자 양도 가능성과 법적 자신감 같은 신호만 흘리는 방식이 유리합니다.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>수정된 파워 구조</h2>
+            <p>현재 시점에서 각 요소가 누구에게 더 유리하게 작동하는지 한눈에 볼 수 있도록 정리했습니다.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>요소</th>
+                <th>평가</th>
+                <th>근거</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>임대차보호법</td>
+                <td>이대권 강함 ✅</td>
+                <td>최소 8년 버팀 가능성이 있어 모두다의 압박 카드 효력이 제한됨</td>
+              </tr>
+              <tr>
+                <td>시간 압박</td>
+                <td>양방향 ⚖️</td>
+                <td>공사는 이미 시작돼 모두다의 급박함이 일부 줄었지만, 이대권도 공사 환경 속 영업 부담이 생김</td>
+              </tr>
+              <tr>
+                <td>경쟁자 양도 카드</td>
+                <td>이대권 핵심 ✅</td>
+                <td>실제 실행 의지와 접촉 증거가 있을 때 가장 강력한 레버리지로 작동</td>
+              </tr>
+              <tr>
+                <td>조용우</td>
+                <td>경계 대상 ⚠️</td>
+                <td>모두다 편향 가능성이 높아, 신뢰 대상이 아니라 역이용 대상에 가까움</td>
+              </tr>
+              <tr>
+                <td>모두다 채찍 카드</td>
+                <td>이대권에게 약함 ✅</td>
+                <td>임대차보호법 방어막과 매출 자신감 때문에 압박 효과가 제한적</td>
+              </tr>
+              <tr>
+                <td>이대권 페인 포인트</td>
+                <td>감정적 스트레스 ⚠️</td>
+                <td>돈보다 계속 신경 쓰이는 상태 자체가 유일한 약점으로 작동</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary-box">
+          <p>
+            한 문장 요약: 이대권은 법적으로 유리하고 금전적으로도 급하지 않지만, 스트레스라는 감정적 비용이 약점입니다.
+            따라서 경쟁자 양도 카드를 실제 행동으로 뒷받침하면서, 협상의 무게중심을 계약서 특약 협상으로 옮기는 것이 지금 가장 강한 수입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>이 문서는 GitHub Pages 또는 일반 웹 호스팅에 단일 HTML 파일로 바로 업로드할 수 있도록 제작되었습니다.</p>
+    </div>
+  </footer>
+</body>
+</html>
